@@ -7,7 +7,7 @@ services:
     plan: free
     # Pick the Render region closest to your MongoDB Atlas cluster (oregon | ohio | virginia | frankfurt |
     # singapore). Every request makes several DB round-trips, so distance to Atlas dominates latency.
-    # region: singapore
+    region: singapore # closest Render region to the Atlas cluster (AWS Mumbai)
     # Monorepo root: the API build bundles the workspace packages it imports.
     buildCommand: npm ci --include=dev && npm run build -w @tdc/api
     startCommand: npm run start -w @tdc/api
