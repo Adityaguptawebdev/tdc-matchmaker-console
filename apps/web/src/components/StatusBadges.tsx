@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { BadgeCheck, Clock3, ShieldAlert } from 'lucide-react';
 import type { ConfidenceLevel, JourneyStatus, MatchStatus, ScoreBand, VerificationStatus } from '@tdc/shared';
 import {
@@ -74,6 +75,12 @@ export function ScoreRing({ score, band, size = 64 }: { score: number; band: Sco
   const stroke = size >= 60 ? 6 : 4;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
+  // Start empty and fill to the score on the next frame, so the ring animates in (instant under reduced motion).
+  const [shown, setShown] = useState(0);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setShown(score));
+    return () => cancelAnimationFrame(frame);
+  }, [score]);
   return (
     <div
       className="relative shrink-0"
@@ -98,8 +105,9 @@ export function ScoreRing({ score, band, size = 64 }: { score: number; band: Sco
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={c}
-          strokeDashoffset={c * (1 - score / 100)}
+          strokeDashoffset={c * (1 - shown / 100)}
           className={BAND_STYLES[band].ring}
+          style={{ transition: 'stroke-dashoffset 900ms cubic-bezier(0.22, 1, 0.36, 1)' }}
         />
       </svg>
       <span

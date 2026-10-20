@@ -2,7 +2,31 @@
 
 An internal tool for TDC matchmakers. Sign in, manage your assigned clients' matchmaking journeys, review full matrimonial biodata, generate **ranked and explainable** match suggestions from a pool of 144 fictional profiles, log calls and notes, send simulated match introductions, and track feedback.
 
-> **Status:** working MVP, verified locally (see [Testing & verification](#testing--verification)). It has **not** been deployed. Deployment configuration is included, but no live URLs exist.
+> **Status:** working MVP, deployed and verified (see [Testing & verification](#testing--verification)).
+
+## Live demo
+
+**App:** https://tdc-matchmaker-console-mu.vercel.app
+
+| Username | Password       | Role                       | Sees           |
+| -------- | -------------- | -------------------------- | -------------- |
+| `ananya` | `TDCdemo@2026` | Senior Matchmaker          | Her 10 clients |
+| `rohan`  | `TDCdemo@2026` | Matchmaker                 | His 4 clients  |
+| `priya`  | `TDCdemo@2026` | Head of Matchmaking (lead) | All 14 clients |
+
+All profiles are fictional. Emails are simulated and only written to the in-app outbox.
+
+**First load may take up to a minute.** The API runs on Render's free plan, which sleeps after 15 minutes without traffic and wakes on the next request.
+
+**Suggested walkthrough:**
+
+1. Sign in as `ananya`. The dashboard shows her book of clients.
+2. Open **Customers → Arjun Malhotra**. The **Preferences** tab shows which assumptions are default rules rather than stated preferences.
+3. Click **Find compatible matches**, then **Why this match** on any card, to see the per-category score breakdown.
+4. Click **Send match**, review the introduction, tick the confirmation and send. The introduction appears in **Match history** and **Email outbox**.
+5. Compare a female customer, e.g. **Kavya Iyer**, whose suggestions use the female weight profile.
+
+The API health check is at https://tdc-matchmaker-api-affj.onrender.com/api/health.
 
 ---
 
@@ -12,6 +36,7 @@ An internal tool for TDC matchmakers. Sign in, manage your assigned clients' mat
 
 ## Contents
 
+- [Live demo](#live-demo)
 - [Features](#features)
 - [Architecture](#architecture)
 - [Quick start](#quick-start)
@@ -46,6 +71,15 @@ An internal tool for TDC matchmakers. Sign in, manage your assigned clients' mat
 
 - Sending an introduction moves _New / Onboarding / Awaiting matches_ to **Matches sent** and updates "last contacted".
 - Feedback of _Meeting scheduled_ moves _New / Onboarding / Awaiting matches / Matches sent / In discussion_ to **Meeting scheduled**.
+
+**Motion.** The animations follow the matchmaking theme:
+
+- **Intro:** when the site first opens, two people approach from either side and a heart appears as they meet. It plays once per browser session and can be skipped with a click or any key.
+- **Login:** an illustration of "your client" and "their match", with a heart travelling between them.
+- **Sending a match:** a short celebration in which the two people's avatars meet, followed by "Introduction sent · Arjun & Simran".
+- **Page and data:** pages fade in on navigation, suggestion cards rise in one after another, score rings fill up, dashboard numbers count up, and chart bars grow.
+
+Signing out asks for confirmation. Every animation is disabled when the operating system's _reduce motion_ setting is on.
 
 **UX and accessibility details.** Loading skeletons, empty and error states with retry, success/error toasts in an `aria-live` region, and confirmation dialogs. Dialogs have a focus trap, close on Escape, restore focus, and stack correctly. Tabs follow the WAI-ARIA pattern with arrow keys. Focus states are visible, and there is a skip link. Charts include a screen-reader table. The layout is responsive (sidebar on desktop, drawer on mobile) and `prefers-reduced-motion` is respected.
 
@@ -358,6 +392,16 @@ Scores describe stated-preference alignment. They are **not** a probability of r
 - **Seed idempotency:** `seed:reset` then `seed` inserted 0 records the second time.
 - **File-store fallback with the production bundle:** an unreachable `MONGODB_URI` fell back to the JSON file, auto-seeded, and a note written before a restart was present after it.
 - **Production hardening:** `/auth/demo-credentials` returns 404, the cookie is `HttpOnly; Secure; SameSite=Lax`, and the server refuses to start without `JWT_SECRET`.
+- **Live deployment** (Vercel → Render (Singapore) → MongoDB Atlas (Mumbai)):
+
+  - `/api/health` reports `production`, `mongo` and `persistent`;
+  - login works through the Vercel `/api` rewrite;
+  - dashboard, customers, profile, notes, recommendations, match history, activity and outbox all return 200;
+  - a female customer gets male suggestions with the female weight profile;
+  - CORS rejects origins other than the Vercel site.
+
+  These checks were made at the API level through the live URL. The deployed UI itself was not clicked through.
+
 - **Browser (Chrome, local dev):**
   - redirect to login; client validation messages; invalid-credential message; demo-account login;
   - dashboard with no console errors; customers search, filter, empty state and URL filters; row click to profile; preferences tab with default-rule hints; note creation with toast and last-contacted update;
@@ -367,7 +411,7 @@ Scores describe stated-preference alignment. They are **not** a probability of r
 ### Not verified
 
 - **A live OpenAI call.** No API key was available. The AI path is covered only by fake-client tests.
-- **Real deployment** to Vercel or Render. Only the configuration files are provided.
+- **The deployed UI in a browser.** The live site was checked at the API level, as described above, and the UI was tested only locally.
 - **Clicking "Sign out" in the browser.** This step was not completed: the browser extension disconnected once, and on the retry the tab was already in use by another signed-in session, so testing stopped there. Logout is verified at the API level (cookie cleared, then `/auth/me` returns 401), the button calls the same endpoint, and a browser check confirmed the session cookie is not readable from page JavaScript.
 - **Resizing a real browser window.** Narrow layouts were checked with 375 px iframes, not a resized window or a physical phone.
 

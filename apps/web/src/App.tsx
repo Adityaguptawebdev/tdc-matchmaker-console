@@ -1,5 +1,6 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import { Compass } from 'lucide-react';
+import { IntroSplash } from './components/motion/IntroSplash';
 import { EmptyState } from './components/ui/Feedback';
 import { ToastProvider } from './components/ui/Toast';
 import { AuthProvider, RequireAuth } from './features/auth/AuthContext';
@@ -34,6 +35,7 @@ function NotFound() {
 export function App() {
   return (
     <BrowserRouter>
+      <IntroSplash />
       <ToastProvider>
         <AuthProvider>
           <Routes>

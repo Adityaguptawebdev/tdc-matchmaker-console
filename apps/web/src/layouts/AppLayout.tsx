@@ -16,6 +16,8 @@ import {
 import type { SystemInfo } from '@tdc/shared';
 import { Avatar } from '../components/ui/Avatar';
 import { IconButton } from '../components/ui/Button';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { useToast } from '../components/ui/Toast';
 import { useAuth } from '../features/auth/AuthContext';
 import { useSystem } from '../features/system';
 import { cn } from '../lib/format';
@@ -36,6 +38,21 @@ const STORE_LABEL: Record<SystemInfo['dataStore'], string> = {
 
 function Sidebar({ system, onNavigate }: { system: SystemInfo | undefined; onNavigate?: () => void }) {
   const { user, logout } = useAuth();
+  const toast = useToast();
+  const [confirmLogout, setConfirmLogout] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+
+  const signOut = async () => {
+    setSigningOut(true);
+    try {
+      await logout();
+      toast.info('Signed out', 'See you next time.');
+    } finally {
+      setSigningOut(false);
+      setConfirmLogout(false);
+    }
+  };
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-2.5 px-5 pb-6 pt-5">
@@ -102,11 +119,25 @@ function Sidebar({ system, onNavigate }: { system: SystemInfo | undefined; onNav
             <p className="truncate text-sm font-medium text-stone-900">{user.name}</p>
             <p className="truncate text-xs text-stone-500">{user.title}</p>
           </div>
-          <IconButton label="Sign out" onClick={() => void logout()}>
+          <IconButton label="Sign out" onClick={() => setConfirmLogout(true)}>
             <LogOut className="h-4 w-4" />
           </IconButton>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmLogout}
+        title="Sign out?"
+        description="You’ll need to sign in again to see your customers and matches."
+        confirmLabel="Sign out"
+        busy={signingOut}
+        onClose={() => setConfirmLogout(false)}
+        onConfirm={() => void signOut()}
+      >
+        <p className="text-sm text-stone-600">
+          Anything you have saved is already stored, so nothing will be lost.
+        </p>
+      </ConfirmDialog>
     </div>
   );
 }
@@ -171,7 +202,10 @@ export function AppLayout() {
         )}
 
         <main id="main" className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          <Outlet />
+          {/* Keyed by path so each page fades in on navigation. */}
+          <div key={location.pathname} className="animate-page-in">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
