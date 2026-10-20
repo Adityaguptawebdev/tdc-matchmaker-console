@@ -72,6 +72,15 @@ The API health check is at https://tdc-matchmaker-api-affj.onrender.com/api/heal
 - Sending an introduction moves _New / Onboarding / Awaiting matches_ to **Matches sent** and updates "last contacted".
 - Feedback of _Meeting scheduled_ moves _New / Onboarding / Awaiting matches / Matches sent / In discussion_ to **Meeting scheduled**.
 
+**Motion.** The animations follow the matchmaking theme:
+
+- **Intro:** when the site first opens, two people approach from either side and a heart appears as they meet. It plays once per browser session and can be skipped with a click or any key.
+- **Login:** an illustration of "your client" and "their match", with a heart travelling between them.
+- **Sending a match:** a short celebration in which the two people's avatars meet, followed by "Introduction sent · Arjun & Simran".
+- **Page and data:** pages fade in on navigation, suggestion cards rise in one after another, score rings fill up, dashboard numbers count up, and chart bars grow.
+
+Signing out asks for confirmation. Every animation is disabled when the operating system's _reduce motion_ setting is on.
+
 **UX and accessibility details.** Loading skeletons, empty and error states with retry, success/error toasts in an `aria-live` region, and confirmation dialogs. Dialogs have a focus trap, close on Escape, restore focus, and stack correctly. Tabs follow the WAI-ARIA pattern with arrow keys. Focus states are visible, and there is a skip link. Charts include a screen-reader table. The layout is responsive (sidebar on desktop, drawer on mobile) and `prefers-reduced-motion` is respected.
 
 ---

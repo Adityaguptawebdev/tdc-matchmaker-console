@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AlertCircle, Eye, EyeOff, KeyRound, LockKeyhole } from 'lucide-react';
 import { loginSchema, type LoginInput } from '@tdc/shared';
+import { CoupleIllustration } from '../components/motion/CoupleIllustration';
 import { Button } from '../components/ui/Button';
 import { Field, Input } from '../components/ui/Field';
 import { useAuth } from '../features/auth/AuthContext';
@@ -85,11 +86,20 @@ export function LoginPage() {
           </span>
           <span className="font-serif text-xl font-semibold text-white">TDC</span>
         </div>
-        <div className="relative max-w-md">
-          <p className="font-serif text-3xl font-medium leading-snug text-white">
+        <div className="relative mx-auto w-full max-w-md text-center">
+          <div className="mb-10 animate-rise-in">
+            <CoupleIllustration />
+          </div>
+          <p
+            className="animate-rise-in font-serif text-3xl font-medium leading-snug text-white"
+            style={{ animationDelay: '150ms' }}
+          >
             Every introduction is a considered one.
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-brand-200">
+          <p
+            className="mt-4 animate-rise-in text-sm leading-relaxed text-brand-200"
+            style={{ animationDelay: '250ms' }}
+          >
             Manage your clients’ journeys, review explainable compatibility suggestions, and keep a clear
             record of every conversation and introduction.
           </p>
@@ -98,7 +108,7 @@ export function LoginPage() {
       </div>
 
       <div className="flex items-center justify-center px-4 py-12 sm:px-8">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm animate-rise-in">
           <div className="mb-8 lg:hidden">
             <span className="font-serif text-2xl font-semibold text-stone-900">TDC</span>
             <p className="text-sm text-stone-500">Matchmaker console</p>

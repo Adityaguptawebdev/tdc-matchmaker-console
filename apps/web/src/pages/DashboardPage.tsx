@@ -20,28 +20,35 @@ import { useAuth } from '../features/auth/AuthContext';
 import { CustomerDirectory } from '../features/customers/CustomerDirectory';
 import { DistributionChart } from '../features/customers/DistributionChart';
 import { useApi } from '../hooks/useApi';
+import { useCountUp } from '../hooks/useMotion';
 import { api } from '../lib/api';
 import { greeting, relativeTime } from '../lib/format';
 
 function StatCard({
   label,
   value,
+  suffix,
   hint,
   icon: Icon,
+  index,
 }: {
   label: string;
-  value: number | string;
+  value: number;
+  suffix?: string;
   hint?: string;
   icon: LucideIcon;
+  index: number;
 }) {
+  const shown = useCountUp(value);
   return (
-    <div className="card p-4">
+    <div className="card animate-rise-in p-4" style={{ animationDelay: `${index * 60}ms` }}>
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-stone-500">{label}</p>
         <Icon className="h-4 w-4 text-stone-400" aria-hidden />
       </div>
       <p className="mt-2 text-[28px] font-semibold leading-none tracking-tight tabular-nums text-stone-900">
-        {value}
+        {shown}
+        {suffix && <span className="text-stone-400">{suffix}</span>}
       </p>
       {hint && <p className="mt-1.5 text-xs text-stone-500">{hint}</p>}
     </div>
@@ -72,30 +79,36 @@ export function DashboardPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         <StatCard
           label="Assigned customers"
+          index={0}
           value={t.assignedCustomers}
           icon={Users}
           hint={`${t.candidatePool} active profiles in pool`}
         />
         <StatCard
           label="Verified profiles"
-          value={`${t.verifiedCustomers}/${t.assignedCustomers}`}
+          index={1}
+          value={t.verifiedCustomers}
+          suffix={`/${t.assignedCustomers}`}
           icon={BadgeCheck}
           hint="ID-verified customers"
         />
         <StatCard
           label="Awaiting matches"
+          index={2}
           value={t.awaitingMatches}
           icon={Hourglass}
           hint="Ready for suggestions"
         />
         <StatCard
           label="Matches sent"
+          index={3}
           value={t.matchesSent}
           icon={Send}
           hint={`${t.activeConversations} marked interested`}
         />
         <StatCard
           label="Meetings scheduled"
+          index={4}
           value={t.meetingsScheduled}
           icon={CalendarHeart}
           hint="From sent introductions"

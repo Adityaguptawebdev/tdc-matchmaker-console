@@ -1,4 +1,5 @@
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { usePrefersReducedMotion } from '../../hooks/useMotion';
 
 interface Datum {
   label: string;
@@ -12,6 +13,7 @@ interface Datum {
  */
 export function DistributionChart({ data, title, unit }: { data: Datum[]; title: string; unit: string }) {
   const height = data.length * 34 + 8;
+  const reduced = usePrefersReducedMotion();
   return (
     <figure>
       <div style={{ height }} aria-hidden>
@@ -42,7 +44,13 @@ export function DistributionChart({ data, title, unit }: { data: Datum[]; title:
               formatter={(value: number) => [`${value} ${unit}`, '']}
               separator=""
             />
-            <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={14} isAnimationActive={false}>
+            <Bar
+              dataKey="count"
+              radius={[0, 4, 4, 0]}
+              barSize={14}
+              isAnimationActive={!reduced}
+              animationDuration={700}
+            >
               {data.map((d) => (
                 <Cell key={d.label} fill={d.count === 0 ? '#e7e5e4' : '#644b98'} />
               ))}

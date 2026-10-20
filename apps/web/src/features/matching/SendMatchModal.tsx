@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeftRight, Cpu, Mail, RefreshCw, Send, Sparkles } from 'lucide-react';
+import { Cpu, Heart, Mail, RefreshCw, Send, Sparkles } from 'lucide-react';
 import type { CandidateSummary, IntroductionDraft, MatchBreakdown, MatchRecord } from '@tdc/shared';
 import { MARITAL_STATUS_LABELS, introductionFormSchema } from '@tdc/shared';
 import { BandBadge, ScoreRing, VerificationBadge } from '../../components/StatusBadges';
@@ -152,7 +152,7 @@ export function SendMatchModal({ open, onClose, customer, candidate, breakdown, 
           <PersonSummary p={customer} role="Customer" />
           <div className="flex flex-col items-center gap-1 px-1">
             <ScoreRing score={breakdown.score} band={breakdown.band} size={56} />
-            <ArrowLeftRight className="hidden h-4 w-4 text-stone-300 sm:block" aria-hidden />
+            <Heart className="h-4 w-4 animate-heartbeat fill-rose-400 text-rose-400" aria-hidden />
           </div>
           <PersonSummary p={candidate} role="Suggested match" />
         </div>

@@ -1,7 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Filter, Info, RotateCcw, SearchX, Star, Undo2, X } from 'lucide-react';
-import type { CandidateSummary, MatchBreakdown, Recommendation, RecommendationsResponse } from '@tdc/shared';
+import type {
+  CandidateSummary,
+  MatchBreakdown,
+  MatchRecord,
+  Recommendation,
+  RecommendationsResponse,
+} from '@tdc/shared';
 import {
   CATEGORY_LABELS,
   EXCLUSION_REASON_LABELS,
@@ -10,6 +16,7 @@ import {
   type CategoryKey,
   type ExclusionReason,
 } from '@tdc/shared';
+import { MatchCelebration } from '../components/motion/MatchCelebration';
 import { Avatar } from '../components/ui/Avatar';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
@@ -72,6 +79,8 @@ export function MatchSuggestionsPage() {
   const [dismissing, setDismissing] = useState<Recommendation | null>(null);
   const [reason, setReason] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [celebrating, setCelebrating] = useState<MatchRecord | null>(null);
+  const endCelebration = useCallback(() => setCelebrating(null), []);
 
   const ageError =
     debounced.minAge && debounced.maxAge && Number(debounced.minAge) > Number(debounced.maxAge)
@@ -373,27 +382,33 @@ export function MatchSuggestionsPage() {
         )}
         {!loading &&
           data.recommendations.map((rec, i) => (
-            <SuggestionCard
+            // Cards rise in one after another; the delay is capped so long lists don't lag.
+            <div
               key={rec.candidate.id}
-              rec={rec}
-              rank={filters.sort === 'score' ? i + 1 : undefined}
-              customerId={id}
-              customerName={customer.firstName}
-              busy={busyId === rec.candidate.id}
-              onView={() => setViewing(rec.candidate.id)}
-              onSend={() => setSending({ candidate: rec.candidate, breakdown: rec.breakdown })}
-              onShortlist={async () => {
-                const next = rec.decision === 'shortlisted' ? 'none' : 'shortlisted';
-                if (await decide(rec.candidate.id, next))
-                  toast.success(
-                    next === 'none' ? 'Removed from shortlist' : `${rec.candidate.firstName} shortlisted`,
-                  );
-              }}
-              onDismiss={() => {
-                setReason('');
-                setDismissing(rec);
-              }}
-            />
+              className="animate-rise-in"
+              style={{ animationDelay: `${Math.min(i, 8) * 50}ms` }}
+            >
+              <SuggestionCard
+                rec={rec}
+                rank={filters.sort === 'score' ? i + 1 : undefined}
+                customerId={id}
+                customerName={customer.firstName}
+                busy={busyId === rec.candidate.id}
+                onView={() => setViewing(rec.candidate.id)}
+                onSend={() => setSending({ candidate: rec.candidate, breakdown: rec.breakdown })}
+                onShortlist={async () => {
+                  const next = rec.decision === 'shortlisted' ? 'none' : 'shortlisted';
+                  if (await decide(rec.candidate.id, next))
+                    toast.success(
+                      next === 'none' ? 'Removed from shortlist' : `${rec.candidate.firstName} shortlisted`,
+                    );
+                }}
+                onDismiss={() => {
+                  setReason('');
+                  setDismissing(rec);
+                }}
+              />
+            </div>
           ))}
       </section>
 
@@ -458,7 +473,18 @@ export function MatchSuggestionsPage() {
           customer={customer}
           candidate={sending.candidate}
           breakdown={sending.breakdown}
-          onSent={() => void reload()}
+          onSent={(match) => {
+            setCelebrating(match);
+            void reload();
+          }}
+        />
+      )}
+
+      {celebrating?.customer && celebrating.candidate && (
+        <MatchCelebration
+          customer={celebrating.customer}
+          candidate={celebrating.candidate}
+          onDone={endCelebration}
         />
       )}
 
