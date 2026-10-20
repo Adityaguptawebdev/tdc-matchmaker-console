@@ -1,12 +1,14 @@
 # TDC Matchmaker Console
 
+**Live Demo:** https://tdc-matchmaker-console-mu.vercel.app · Login: `ananya` / `TDCdemo@2026`
+
 An internal tool for TDC matchmakers. Sign in, manage your assigned clients' matchmaking journeys, review full matrimonial biodata, generate **ranked and explainable** match suggestions from a pool of 144 fictional profiles, log calls and notes, send simulated match introductions, and track feedback.
 
 > **Status:** working MVP, deployed and verified (see [Testing & verification](#testing--verification)).
 
 ## Live demo
 
-**App:** https://tdc-matchmaker-console-mu.vercel.app
+**Live Demo:** https://tdc-matchmaker-console-mu.vercel.app
 
 | Username | Password       | Role                       | Sees           |
 | -------- | -------------- | -------------------------- | -------------- |
