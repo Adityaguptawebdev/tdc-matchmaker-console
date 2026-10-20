@@ -1,0 +1,42 @@
+{
+  "name": "tdc-matchmaker",
+  "private": true,
+  "version": "1.0.0",
+  "description": "TDC Matchmaker Dashboard — internal matchmaking operations platform (MVP)",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c magenta,cyan \"npm run dev -w @tdc/api\" \"npm run dev -w @tdc/web\"",
+    "dev:api": "npm run dev -w @tdc/api",
+    "dev:web": "npm run dev -w @tdc/web",
+    "build": "npm run build -w @tdc/api && npm run build -w @tdc/web",
+    "start": "npm run start -w @tdc/api",
+    "seed": "npm run seed -w @tdc/api",
+    "seed:reset": "npm run seed:reset -w @tdc/api",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "test": "npm run test --workspaces --if-present",
+    "test:engine": "npm run test -w @tdc/matching-engine",
+    "test:api": "npm run test -w @tdc/api",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "concurrently": "9.1.0",
+    "eslint": "9.39.5",
+    "eslint-plugin-react-hooks": "5.0.0",
+    "eslint-plugin-react-refresh": "0.4.14",
+    "globals": "15.12.0",
+    "prettier": "3.3.3",
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.71.2",
+    "vitest": "4.1.12"
+  }
+}
